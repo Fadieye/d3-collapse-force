@@ -38,21 +38,6 @@ export const Visualisation = ({ data }) => {
     return edges;
   };
 
-  const getNodes = () => {
-    var nodes = [];
-
-    data.nodes.forEach(function (e) {
-      nodes.push({
-        id: e.id,
-        name: e.name,
-        show: false,
-      });
-    });
-
-    console.log(nodes);
-    return nodes;
-  };
-
   var edgesTest = getEdges();
 
   useEffect(() => {
@@ -140,16 +125,25 @@ export const Visualisation = ({ data }) => {
             //check if link is from this node, and if so, collapse
             links.forEach(function (l) {
               if (l.source.id === sourceNode.id) {
-                console.log('Link to: ' + l.target.name);
-                l.show = true;
+                if (l.show) {
+                  l.show = false;
+                    
+                  nodes.forEach(function (n) {
+                    if (l.target.id === n.id) {
+                      n.show = false;
+                    }
+                  });
 
-                nodes.forEach(function (n){
-                  if(l.target.id === n.id) {
-                    n.show = true;
-                  }
-                }) 
+                } else {
+                  console.log('Link to: ' + l.target.name);
+                  l.show = true;
 
- 
+                  nodes.forEach(function (n) {
+                    if (l.target.id === n.id) {
+                      n.show = true;
+                    }
+                  });
+                }
               }
             });
           }
