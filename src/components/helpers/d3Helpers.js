@@ -134,6 +134,11 @@ export const drag = (node) => {
     .on('end', dragended);
 };
 
+export const zoom = (node) =>
+  d3.zoom().on('zoom', () => {
+    node.attr('transform', (event) => event.transform);
+  });
+
 /* export const click = (d, event) => {
   if (!event.defaultPrevented) {
     console.log('clicked: ' + event.name + " id: " + event.id);

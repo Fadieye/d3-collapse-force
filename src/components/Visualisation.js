@@ -1,15 +1,14 @@
 import { useEffect, useRef } from 'react';
 import {
   select,
-  forceCenter,
   forceSimulation,
   forceLink,
   forceManyBody,
   forceX,
   forceY,
+  zoom,
 } from 'd3';
 import { drag } from './helpers/d3Helpers';
-import { drawSvG } from './helpers/d3Helpers';
 
 export const Visualisation = ({ data }) => {
   const vizContainer = useRef();
@@ -75,6 +74,8 @@ export const Visualisation = ({ data }) => {
           .join('circle')
           .attr('class', 'node')
           .attr('r', 32)
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 2)
           .call(drag(simulation))
           .on('click', click);
 
@@ -127,13 +128,13 @@ export const Visualisation = ({ data }) => {
               if (l.source.id === sourceNode.id) {
                 if (l.show) {
                   l.show = false;
-                    
                   nodes.forEach(function (n) {
                     if (l.target.id === n.id) {
+                      childrenOfchildren(n);
                       n.show = false;
+
                     }
                   });
-
                 } else {
                   console.log('Link to: ' + l.target.name);
                   l.show = true;
@@ -147,16 +148,44 @@ export const Visualisation = ({ data }) => {
               }
             });
           }
+
+          function childrenOfchildren(node) {
+            //check all targets
+            var targetLinks = links.filter((l) => l.source.id === node.id);
+
+            targetLinks.forEach(function (l) {
+              console.log(l.target);
+              l.target.show = false;
+              l.show = false;
+
+              var leftLinks = links.filter(
+                (link) => link.target.id === l.target.id
+              );
+
+              leftLinks.forEach(function (left) {
+                  console.log('L2: ' + left.target.name);
+                  left.target.show = true;
+                  left.source.show = true;
+              });
+
+              childrenOfchildren(l.target);
+            });
+          }
+
           console.log(links);
           drawSvG();
         }
       }
+      /* 
+      const zoomIn = zoom()
+      .on('zoom', (event) => {
+        svg.attr('transform', event.transform);
+      })   */
 
       // centering workaround
-      svg.attr('viewBox', [-width / 2, -height / 2, width, height]);
-
-      /*const simulation = createSimulation({ data })*/
-      svg.call((svg) => drawSvG());
+      svg
+        .attr('viewBox', [-width / 2, -height / 2, width, height])
+        .call((svg) => drawSvG());
     }
   }, [width, height, data]);
 
