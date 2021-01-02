@@ -130,13 +130,24 @@ export const Visualisation = ({ data }) => {
                   l.show = false;
                   nodes.forEach(function (n) {
                     if (l.target.id === n.id) {
-                      childrenOfchildren(n);
-                      n.show = false;
+                      var leftLinks = links.filter(
+                        (link) => link.target.id === l.target.id
+                      );
 
+                      leftLinks.forEach(function (left) {
+                        if (left.source.id === sourceNode.id) {
+                          console.log('same source ' + sourceNode.name);
+                          console.log(left);
+                          left.target.show = false;
+                          childrenOfchildren(left.target);
+                        } else {
+                          var index = leftLinks.indexOf(left);
+                          leftLinks.splice(index, 1);
+                        }
+                      });
                     }
                   });
                 } else {
-                  console.log('Link to: ' + l.target.name);
                   l.show = true;
 
                   nodes.forEach(function (n) {
@@ -154,25 +165,25 @@ export const Visualisation = ({ data }) => {
             var targetLinks = links.filter((l) => l.source.id === node.id);
 
             targetLinks.forEach(function (l) {
-              console.log(l.target);
-              l.target.show = false;
-              l.show = false;
+              if(!l.source.show){
+                l.target.show = false;
+                l.show = false;
+              }
 
               var leftLinks = links.filter(
                 (link) => link.target.id === l.target.id
               );
 
               leftLinks.forEach(function (left) {
-                  console.log('L2: ' + left.target.name);
+                if (left.show) {
                   left.target.show = true;
                   left.source.show = true;
+                }
               });
 
               childrenOfchildren(l.target);
             });
           }
-
-          console.log(links);
           drawSvG();
         }
       }
