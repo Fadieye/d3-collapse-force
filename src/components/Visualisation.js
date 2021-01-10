@@ -6,14 +6,14 @@ import {
   forceManyBody,
   forceX,
   forceY,
-  zoom,
+  zoom
 } from 'd3';
 import { drag } from './helpers/d3Helpers';
 
 export const Visualisation = ({ data }) => {
   const vizContainer = useRef();
-  const width = 2048;
-  const height = 1024;
+  const width = 2048/2;
+  const height = 1024/2;
 
   const getEdges = () => {
     var edges = [];
@@ -41,11 +41,11 @@ export const Visualisation = ({ data }) => {
 
   useEffect(() => {
     if (vizContainer.current) {
-      const svg = select(vizContainer.current);
+      const svg = select(vizContainer.current)
       var nodes = data.nodes;
       var links = edgesTest;
 
-      console.log(nodes);
+
 
       const simulation = forceSimulation(nodes)
         .force(
@@ -66,6 +66,7 @@ export const Visualisation = ({ data }) => {
           .attr('stroke', 'black')
           .attr('fill', 'black')
           .call(drag(simulation));
+
 
         // nodes
         const node = svg
@@ -102,7 +103,7 @@ export const Visualisation = ({ data }) => {
             .attr('y1', (d) => d.source.y)
             .attr('x2', (d) => d.target.x)
             .attr('y2', (d) => d.target.y);
-
+          
           node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
 
           // Update label positions
@@ -165,7 +166,7 @@ export const Visualisation = ({ data }) => {
             var targetLinks = links.filter((l) => l.source.id === node.id);
 
             targetLinks.forEach(function (l) {
-              if(!l.source.show){
+              if (!l.source.show) {
                 l.target.show = false;
                 l.show = false;
               }
@@ -187,11 +188,6 @@ export const Visualisation = ({ data }) => {
           drawSvG();
         }
       }
-      /* 
-      const zoomIn = zoom()
-      .on('zoom', (event) => {
-        svg.attr('transform', event.transform);
-      })   */
 
       // centering workaround
       svg

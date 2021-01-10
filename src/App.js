@@ -1,36 +1,36 @@
-import React, { useState, useEffect } from 'react'
-import { Visualisation } from './components/Visualisation'
-import data from './data/miserable.json'
+import React, { useState, useEffect } from 'react';
+import { Visualisation } from './components/Visualisation';
 
 const App = () => {
+  const [dataTest, setData] = useState({ nodes: [], edges: [] });
+
+  const setNodesEdges = (result) => {
+    setData({
+      nodes: result.nodes,
+      edges: result.edges,
+    });
+  };
 
   useEffect(() => {
-    var edges = []
-    data.edges.forEach(function (e) {
-      var sourceNode = data.nodes.filter(function (n) {
-          return n.id === e.source
-        })[0],
-        targetNode = data.nodes.filter(function (n) {
-          return n.id === e.target
-        })[0]
+    if (dataTest.nodes.length === 0) {
+      fetch('http://localhost:8080/fe_graph/miserable')
+        .then((res) => res.json())
+        .then((res) => setNodesEdges(res))
+        .catch(() => setData({ hasErrors: true }));
+    }
+    console.log(dataTest);
+  });
 
-      edges.push({
-        source: sourceNode,
-        target: targetNode,
-        value: e.Value,
-      })
-    })
+  if (dataTest.nodes.length === 0) {
+    return <h2>Data not loaded</h2>;
+  } else {
+    return (
+      <div className="app">
+        <h2>Force</h2>
+        <Visualisation data={dataTest} />
+      </div>
+    );
+  }
+};
 
-
-    console.log('rendered in App')
-  })
-
-  return (
-    <div className="app">
-      <h2>Force</h2>
-      <Visualisation data = {data} />
-    </div>
-  )
-}
-
-export default App
+export default App;
